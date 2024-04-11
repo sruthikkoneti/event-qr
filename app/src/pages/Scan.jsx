@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
 import QrFrame from "./../assets/qr-frame.svg";
-import { auth } from "../../firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 
 const QrReader = () => {
   const scanner = useRef();
@@ -12,8 +9,6 @@ const QrReader = () => {
   const qrBoxEl = useRef(null);
   const [qrOn, setQrOn] = useState(true);
   const [scannedResult, setScannedResult] = useState("");
-
-  const navigate=useNavigate()
 
   const onScanSuccess = (result) => {
     console.log(result);
@@ -23,6 +18,7 @@ const QrReader = () => {
   const onScanFail = (err) => {
     // console.log(err);
   };
+
 
   useEffect(() => {
     if (videoEl.current && !scanner.current) {
@@ -51,12 +47,6 @@ const QrReader = () => {
   }, []);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate("/");
-      }
-    });
-
     if (!qrOn)
       alert(
         "Camera is blocked or not accessible. Please allow camera in your browser permissions and Reload."
@@ -65,15 +55,18 @@ const QrReader = () => {
 
   return (
     <QrReaderContainer>
+    <h1>QR Code Scanner</h1>
       <div className="qr-reader">
         <video ref={videoEl} className="qr-video"></video>
         {scannedResult && (
-          <p className="scanned-result">Scanned Result: {scannedResult}</p>
+          <p className="scanned-result">
+            Scanned Result: {scannedResult}
+          </p>
         )}
       </div>
       <div className="buttons">
-        <button onClick={() => RedeemOne()}>Redeem One Coupon</button>
-        <button onClick={() => RedeemAll()}>Redeem All Coupon</button>
+        <button className="one" onClick={() => RedeemOne()}>Redeem One Coupon</button>
+        <button className="all" onClick={() => RedeemAll()}>Redeem All Coupon</button>
       </div>
     </QrReaderContainer>
   );
@@ -84,13 +77,12 @@ const QrReaderContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-
+  gap: 2rem;
+  margin: 2rem;
   .qr-reader {
     position: relative;
-    width: 90vw;
-    height: 400px;
-    max-width: 400px;
+    max-width: 90vw;
+    border-radius: 3%;
   }
 
   .qr-video {
@@ -107,6 +99,22 @@ const QrReaderContainer = styled.div`
     background-color: rgba(0, 0, 0, 0.7);
     padding: 5px;
     border-radius: 5px;
+  }
+  .buttons{
+    display: flex;
+    gap: 1rem;
+    button{
+        padding: 5px;
+        border: none;
+        color: white;
+        border-radius: 5px;
+    }
+    .one{
+        background-color: #198754;
+    }
+    .all{
+        background-color: #0d6efd;
+    }
   }
 `;
 
